@@ -1,0 +1,5 @@
+/.vscode
+/venv
+/test/results.xml
+/test/__pycache__/
+/test/sim_build/
