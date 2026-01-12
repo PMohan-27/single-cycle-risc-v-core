@@ -1,6 +1,11 @@
 # CPU Arch Info
 
+Single-cycle RISC-V CPU implementation.
+
+![CPU Arch Diagram](RISCV-CPU.png)
+
+
 ## TODO
-- [ ] CPU architecture diagram
+- [x] CPU architecture diagram
 - [ ] Datapath description
 - [ ] Control signals table

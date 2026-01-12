@@ -3,8 +3,8 @@
 SIM ?= icarus
 TOPLEVEL_LANG ?= verilog
 SRC_DIR = $(PWD)/../rtl
-PROJECT_SOURCES = instruction_memory.sv
-
+PROJECT_SOURCES = cpu.sv instruction_memory.sv 
+WAVES = 1
 
 SIM_BUILD				= sim_build/rtl
 VERILOG_SOURCES += $(addprefix $(SRC_DIR)/,$(PROJECT_SOURCES))
@@ -12,11 +12,11 @@ VERILOG_SOURCES += $(addprefix $(SRC_DIR)/,$(PROJECT_SOURCES))
 
 COMPILE_ARGS 		+= -I$(SRC_DIR)
 
-VERILOG_SOURCES += $(PWD)/tb.v
-TOPLEVEL = tb
+TOPLEVEL = cpu_top
 
 # MODULE is the basename of the Python test file
 MODULE = test
+
 
 # include cocotb's make rules to take care of the simulator setup
 include $(shell cocotb-config --makefiles)/Makefile.sim
