@@ -22,12 +22,12 @@ docs/       - Documentation and diagrams
 
 
 ### TODO
-- [ ] Instruction memory
-- [ ] Register file
+- [x] Instruction memory
+- [x] Register file
 - [ ] ALU
 - [ ] Control unit
 - [ ] Data memory
-- [ ] PC (Program Counter)
+- [x] PC (Program Counter)
 - [ ] Immediate generator
 - [ ] Integration & testing
 
