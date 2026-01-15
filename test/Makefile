@@ -3,7 +3,7 @@
 SIM ?= icarus
 TOPLEVEL_LANG ?= verilog
 SRC_DIR = $(PWD)/../rtl
-PROJECT_SOURCES = cpu.sv instruction_memory.sv register_file.sv PC.sv control_unit.sv ALU.sv
+PROJECT_SOURCES = cpu.v instruction_memory.v register_file.v PC.v control_unit.v ALU.v constants.vh
 WAVES = 1
 
 SIM_BUILD				= sim_build/rtl
