@@ -1,4 +1,3 @@
-`include "constants.vh"
 
 module ALU(
     input  [3:0] AluOp,
@@ -6,7 +5,7 @@ module ALU(
     output reg ZeroFlag, OverflowFlag, NegativeFlag, CarryFlag,
     output reg [31:0] result
 );
-
+    
     always @(*)begin
         // defaults
         CarryFlag = 0;

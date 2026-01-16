@@ -1,5 +1,5 @@
 module reg_file(
-    input clk,
+    input clk, rst,
     input [4:0] A1, A2, A3,
     input [31:0] WD3,
     input WE3,
@@ -11,7 +11,13 @@ module reg_file(
     assign RD1 = (A1 == 5'b0) ? 32'b0 : registers[A1];
     assign RD2 = (A2 == 5'b0) ? 32'b0 : registers[A2];
 
-    always @(posedge clk)begin
+    always @(posedge clk or posedge rst)begin
+        if(rst == 1'b1)begin
+            integer  i = 0;
+           for (i = 1; i < 32; i = i + 1) begin
+                registers[i] <= 32'h0;
+            end
+        end
         if(WE3 && A3 != 5'b0)begin
             registers[A3] <= WD3;
         end

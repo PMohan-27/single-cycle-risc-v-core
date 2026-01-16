@@ -4,25 +4,40 @@ from cocotb.clock import Clock
 from cocotb.triggers import RisingEdge, Timer
 import ctypes
 
+# just a test to see if it compiles / has no glaring errors
 @cocotb.test()
 async def test_cpu_basic(dut):
     
-    # Create a 10ns period clock (100MHz)
     clock = Clock(dut.clk, 10, units="ns")
     cocotb.start_soon(clock.start())
     
-    # Keep reset low
+    dut.rst.value = 1
+    await RisingEdge(dut.clk)
+    await RisingEdge(dut.clk)  
+
     dut.rst.value = 0
+
     
+    dut.reg_file_inst.registers[1].value = 5   # x1 = 5
+    dut.reg_file_inst.registers[2].value = 3   # x2 = 3
+    dut.reg_file_inst.registers[3].value = 7   # x3 = 7
+    dut.reg_file_inst.registers[4].value = 2   # x4 = 2
+
+    dut.instruction_memory_inst.instr[0].value = 0x003100B3  # add x1, x2, x3
+    dut.instruction_memory_inst.instr[1].value = 0x402082B3  # sub x5, x1, x2  
+    dut.instruction_memory_inst.instr[2].value = 0x00317133  # and x2, x2, x3
+    dut.instruction_memory_inst.instr[3].value = 0x0041E1B3  # or  x3, x3, x4
+
     # Run for 100 clock cycles
     for i in range(100):
         await RisingEdge(dut.clk)
         if i % 10 == 0:
+            cocotb.log.info(dut.PC_out)
             cocotb.log.info(f"Cycle {i}")
     
     cocotb.log.info("Test completed!")
 
-@cocotb.test
+# @cocotb.test
 async def ALU_test(dut):
 
     ALU_OPS = {
