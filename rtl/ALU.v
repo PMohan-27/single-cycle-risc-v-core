@@ -26,6 +26,7 @@ module ALU(
                 begin
                     //Carry acts as an inverse borrow for sub
                     {CarryFlag, result} = SrcA - SrcB;
+                    CarryFlag = ~CarryFlag;
                     //make sure sign bits are opposite (bc only pos - neg and neg - pos can overflow)
                     //then we check if the result has the expected sign (pos - neg should result in a pos)
                     OverflowFlag = ((SrcA[31] != SrcB[31] )&&(SrcA[31] != result[31]));

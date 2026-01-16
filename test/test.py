@@ -32,11 +32,12 @@ async def ALU_test(dut):
         "OR":   (0b0011, lambda a,b: a | b),  
         "AND":  (0b0100, lambda a,b: a & b),  
         "SLL":  (0b0101, lambda a,b: a << (b &0b11111)),  
-        "SRL":  (0b0110, lambda a,b: a >> (b &0b11111)),  
+        "SRL":  (0b0110, lambda a,b: ctypes.c_uint32(a).value >> (b &0b11111)),  
         "SRA":  (0b0111, lambda a,b: ctypes.c_int32(a).value >> (b &0b11111)), 
         "SLT":  (0b1000, lambda a,b: ctypes.c_int32(a).value < ctypes.c_int32(b).value),  
         "SLTU": (0b1001, lambda a,b: ctypes.c_uint32(a).value < ctypes.c_uint32(b).value),  
     }
+
     src_values = [
         (5, 3),
         (0xFFFFFFFF, 1),
@@ -49,6 +50,7 @@ async def ALU_test(dut):
         (100, 50),
         (0x12345678, 0x87654321)
     ]
+
     for values in src_values:
         for operation in ALU_OPS:
             dut.AluOp.value , calculation = ALU_OPS[operation]
@@ -58,7 +60,9 @@ async def ALU_test(dut):
 
             await Timer(10, unit="ns")
 
-            dut._log.info(f"{operation} {int(dut.SrcA.value)}, {int(dut.SrcB.value)} result: {int(dut.result.value):08X} ({dut.result.value.to_signed()})")
+            dut._log.info(f"U{operation} {int(dut.SrcA.value)}, {int(dut.SrcB.value)} result: {int(dut.result.value)}")
+            dut._log.info(f"{operation} {int(dut.SrcA.value.to_signed())}, {int(dut.SrcB.value.to_signed())} result: {int(dut.result.value.to_signed())}")
+
             expected_result = calculation(int(dut.SrcA.value),int(dut.SrcB.value))
             assert(int(dut.result.value) == (expected_result & 0xFFFFFFFF))
 
