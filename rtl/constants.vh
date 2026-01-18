@@ -23,5 +23,10 @@
 `define U_LUI 7'b0110111
 `define U_AUIPC 7'b0010111
 
+`define I_IMM 3'b000
+`define S_IMM 3'b001
+`define B_IMM 3'b010
+`define U_IMM 3'b011
+`define J_IMM 3'b100
 
 `endif 

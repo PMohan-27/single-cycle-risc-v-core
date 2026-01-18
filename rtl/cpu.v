@@ -8,7 +8,7 @@ module cpu_top(
 
     wire  [3:0] AluOp;
     wire [31:0] SrcA, SrcB;
-    wire [31:0] result;
+    wire [31:0] AluResult;
 
     wire PC_sel;
     wire [31:0] PC_in, PC_out;
@@ -16,10 +16,11 @@ module cpu_top(
     wire  [6:0] opcode, funct7;
     wire  [2:0] funct3;
     wire  ZeroFlag, OverflowFlag, NegativeFlag, CarryFlag;
+    wire ExtSign; // Sign control for Load/store
     wire  MemWrite, RegWrite, AluSrcBSel, ResultSrc, PCSel;
-    wire  [3:0] ImmSel;
+    wire [1:0] MemSize;
+    wire [2:0] ImmSel;
 
-    wire [31:0] immExt;
 
 
     wire [31:0] read;
@@ -29,8 +30,11 @@ module cpu_top(
     wire [31:0] WD3;
     wire WE3;
     wire [31:0] RD1, RD2;
+    
+    wire [31:0] ImmExt;
+    wire [31:0] DataMemResult;
 
-    assign PC_in = (PC_sel == 1'b0) ? PC_out+4 : PC_out+immExt;
+    assign PC_in = (PC_sel == 1'b0) ? PC_out+4 : PC_out+ImmExt;
 
     instr_mem instruction_memory_inst(
         .addr(PC_out),
@@ -43,8 +47,9 @@ module cpu_top(
     assign A1 = read[19:15];
     assign A2 = read[24:20];
     assign A3 = read[11:7];
-    assign WD3 = result; // will be a mux with alu result and data mem read
-
+    assign WD3 = (ResultSrc == 1'b0) ? AluResult : DataMemResult; // will be a mux with alu result and data mem read
+    assign SrcA = RD1;
+    assign SrcB = (AluSrcBSel == 1'b0) ? RD2 : ImmExt;
 
     PC pc_inst(
         .clk(clk),
@@ -58,10 +63,11 @@ module cpu_top(
         .A1(A1),
         .A2(A2),
         .A3(A3),
-        .WD3(result),
+        .WD3(WD3),
         .WE3(RegWrite),
-        .RD1(SrcA),
-        .RD2(SrcB)
+        .RD1(RD1),
+        .RD2(RD2),
+        .rst(rst)
 
     );
     ALU alu_inst(
@@ -72,7 +78,7 @@ module cpu_top(
         .OverflowFlag(OverflowFlag),
         .NegativeFlag(NegativeFlag),
         .CarryFlag(CarryFlag),
-        .result(result)
+        .result(AluResult)
     );
 
     control_unit control_unit_inst(
@@ -89,10 +95,27 @@ module cpu_top(
         .AluSrcBSel(AluSrcBSel),
         .ResultSrc(ResultSrc),
         .PCSel(PC_sel),
-        .ImmSel(ImmSel)
+        .ImmSel(ImmSel),
+        .MemSize(MemSize),
+        .ExtSign(ExtSign)
     );
 
+    imm_gen imm_gen_inst(
+        .inst(read),
+        .ImmSel(ImmSel),
+        .ImmExt(ImmExt)
+    );  
 
+    data_mem data_memory_inst(
+        .WE(MemWrite),
+        .clk(clk),
+        .rst(rst),
+        .ExtSign(ExtSign),
+        .MemSize(MemSize),
+        .addr(AluResult),
+        .WD(RD2),
+        .read(DataMemResult)
+    );
 
 
 

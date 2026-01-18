@@ -18,28 +18,51 @@ async def test_cpu_basic(dut):
     dut.rst.value = 0
 
     
-    dut.reg_file_inst.registers[1].value = 5   # x1 = 5
-    dut.reg_file_inst.registers[2].value = 3   # x2 = 3
-    dut.reg_file_inst.registers[3].value = 7   # x3 = 7
-    dut.reg_file_inst.registers[4].value = 2   # x4 = 2
+    dut.reg_file_inst.registers[1].value = 0   # x1 = 0 (base address)
+    dut.reg_file_inst.registers[2].value = 0   
+    dut.reg_file_inst.registers[3].value = 0   
+    dut.reg_file_inst.registers[4].value = 0   
+    dut.reg_file_inst.registers[5].value = 0   
 
-    dut.instruction_memory_inst.instr[0].value = 0x003100B3  # add x1, x2, x3
-    dut.instruction_memory_inst.instr[1].value = 0x402082B3  # sub x5, x1, x2  
-    dut.instruction_memory_inst.instr[2].value = 0x00317133  # and x2, x2, x3
-    dut.instruction_memory_inst.instr[3].value = 0x0041E1B3  # or  x3, x3, x4
 
+    dut.data_memory_inst.memory[0].value = 0x12345678  
+    dut.data_memory_inst.memory[1].value = 0xAABBCCDD  
+    dut.data_memory_inst.memory[2].value = 0xDEADBEEF  
+    dut.data_memory_inst.memory[3].value = 0xCAFEBABE  
+    dut.data_memory_inst.memory[4].value = 0x13579BDF  
+    dut.data_memory_inst.memory[5].value = 0x2468ACE0  
+    dut.data_memory_inst.memory[6].value = 0xFEDCBA98  
+    dut.data_memory_inst.memory[7].value = 0x76543210  
+
+    
+    dut.instruction_memory_inst.instr[0].value = 0x00009103  # lh  x2, 0(x1)   - Load halfword [15:0] = 0x5678 → sign-extend → 0x00005678
+    
+    dut.instruction_memory_inst.instr[1].value = 0x0000A183  # lw  x3, 0(x1)   - Load word = 0x12345678
+    dut.instruction_memory_inst.instr[2].value = 0x0040C203  # lbu x4, 4(x1)   - Load byte unsigned [7:0] = 0xDD → zero-extend → 0x000000DD
+    dut.instruction_memory_inst.instr[3].value = 0x0040D283  # lhu x5, 4(x1)   - Load halfword unsigned [15:0] = 0xCCDD → zero-extend → 0x0000CCDD
+
+ 
+    cocotb.log.info("Register file dumped to register_dump.txt")
     # Run for 100 clock cycles
     for i in range(100):
         await RisingEdge(dut.clk)
         if i % 10 == 0:
-            cocotb.log.info(dut.PC_out)
             cocotb.log.info(f"Cycle {i}")
     
+    with open("register_dump.txt", "w") as f:
+        f.write("Register File Dump\n")
+        for reg_num in range(32):
+            try:
+                reg_val = int(dut.reg_file_inst.registers[reg_num].value)
+                f.write(f"x{reg_num:2d} = 0x{reg_val:08X} ({reg_val:11d})\n")
+            except:
+                f.write(f"x{reg_num:2d} = N/A\n")
+        
+
     cocotb.log.info("Test completed!")
 
 # @cocotb.test
 async def ALU_test(dut):
-
     ALU_OPS = {
         "ADD":  (0b0000, lambda a,b: a + b),  
         "SUB":  (0b0001, lambda a,b: a - b),  
@@ -75,11 +98,11 @@ async def ALU_test(dut):
 
             await Timer(10, unit="ns")
 
-            dut._log.info(f"U{operation} {int(dut.SrcA.value)}, {int(dut.SrcB.value)} result: {int(dut.result.value)}")
-            dut._log.info(f"{operation} {int(dut.SrcA.value.to_signed())}, {int(dut.SrcB.value.to_signed())} result: {int(dut.result.value.to_signed())}")
+            dut._log.info(f"U{operation} {int(dut.SrcA.value)}, {int(dut.SrcB.value)} result: {int(dut.AluResult.value)}")
+            dut._log.info(f"{operation} {int(dut.SrcA.value.to_signed())}, {int(dut.SrcB.value.to_signed())} result: {int(dut.AluResult.value.to_signed())}")
 
             expected_result = calculation(int(dut.SrcA.value),int(dut.SrcB.value))
-            assert(int(dut.result.value) == (expected_result & 0xFFFFFFFF))
+            assert(int(dut.AluResult.value) == (expected_result & 0xFFFFFFFF))
 
 
     
