@@ -7,7 +7,7 @@ module imm_gen(
     always @(*)begin
         case(ImmSel)
         `I_IMM: ImmExt = {{20{inst[31]}},inst[31:20]};
-        // `S_IMM: 
+        `S_IMM: ImmExt = {{20{inst[31]}},inst[31:25],inst[11:7]};
         // `B_IMM:
         endcase
     end

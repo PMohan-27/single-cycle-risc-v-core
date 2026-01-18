@@ -70,6 +70,21 @@ module control_unit(
                     3'b101: begin MemSize = 2'b01; ExtSign = 0; end
                 endcase
             end
+        `S_TYPE:
+            begin
+                RegWrite = 0;
+                MemWrite = 1;
+                ResultSrc = 1;
+                AluSrcBSel = 1;
+                PCSel = 0;
+                ImmSel = `S_IMM;
+                AluOp = `ADD;
+                case(funct3)
+                    3'b000: MemSize = 2'b00; 
+                    3'b001: MemSize = 2'b01; 
+                    3'b010: MemSize = 2'b10; 
+                endcase
+            end
         endcase
     end
 

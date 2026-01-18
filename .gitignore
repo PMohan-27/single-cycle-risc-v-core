@@ -3,5 +3,5 @@
 /test/results.xml
 /test/__pycache__/
 /test/sim_build/
-/test/register_dump.txt
+/test/mem_dump.txt
 /docs/notes.md
