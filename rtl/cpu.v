@@ -10,15 +10,15 @@ module cpu_top(
     wire [31:0] SrcA, SrcB;
     wire [31:0] AluResult;
 
-    wire PC_sel;
+    wire [1:0] PC_sel;
     wire [31:0] PC_in, PC_out;
     
     wire  [6:0] opcode, funct7;
     wire  [2:0] funct3;
     wire  ZeroFlag, OverflowFlag, NegativeFlag, CarryFlag;
     wire ExtSign; // Sign control for Load/store
-    wire  MemWrite, RegWrite, AluSrcBSel, ResultSrc, PCSel;
-    wire [1:0] MemSize;
+    wire  MemWrite, RegWrite, AluSrcBSel;
+    wire [1:0] MemSize, ResultSrc, PCSel;
     wire [2:0] ImmSel;
 
 
@@ -34,7 +34,7 @@ module cpu_top(
     wire [31:0] ImmExt;
     wire [31:0] DataMemResult;
 
-    assign PC_in = (PC_sel == 1'b0) ? PC_out+4 : PC_out+ImmExt;
+    assign PC_in = (PC_sel == 2'b00) ? PC_out+4 : ((PC_sel == 2'b01) ? PC_out+ImmExt : ( AluResult &~1'b1));
 
     instr_mem instruction_memory_inst(
         .addr(PC_out),
@@ -47,7 +47,7 @@ module cpu_top(
     assign A1 = read[19:15];
     assign A2 = read[24:20];
     assign A3 = read[11:7];
-    assign WD3 = (ResultSrc == 1'b0) ? AluResult : DataMemResult; // will be a mux with alu result and data mem read
+    assign WD3 = (ResultSrc == 2'b00) ? AluResult : ((ResultSrc == 2'b01) ? DataMemResult : PC_out + 4); 
     assign SrcA = RD1;
     assign SrcB = (AluSrcBSel == 1'b0) ? RD2 : ImmExt;
 

@@ -17,45 +17,18 @@ async def test_cpu_basic(dut):
 
     dut.rst.value = 0
 
-    
-    dut.reg_file_inst.registers[1].value = 0   # x1 = 0 (base address)
-    dut.reg_file_inst.registers[2].value = 0   
-    dut.reg_file_inst.registers[3].value = 0   
-    dut.reg_file_inst.registers[4].value = 0   
-    dut.reg_file_inst.registers[5].value = 0   
+    dut.reg_file_inst.registers[5].value = 0x100  
 
-
-    dut.data_memory_inst.memory[0].value = 0x12345678  
-    dut.data_memory_inst.memory[1].value = 0xAABBCCDD  
-    dut.data_memory_inst.memory[2].value = 0xDEADBEEF  
-    dut.data_memory_inst.memory[3].value = 0xCAFEBABE  
-    dut.data_memory_inst.memory[4].value = 0x13579BDF  
-    dut.data_memory_inst.memory[5].value = 0x2468ACE0  
-    dut.data_memory_inst.memory[6].value = 0xFEDCBA98  
-    dut.data_memory_inst.memory[7].value = 0x76543210  
-
-    dut.reg_file_inst.registers[10].value = 0     # x10 = 0 (base)
-    dut.reg_file_inst.registers[11].value = 0xFF  # x11 = 0xFF
-    dut.reg_file_inst.registers[12].value = 0x1234  # x12 = 0x1234
-    dut.reg_file_inst.registers[13].value = 0x99887766  # x13 = 0x99887766
-
-    dut.instruction_memory_inst.instr[4].value = 0x00B50423  # sb x11, 8(x10)   - Store to mem[2][7:0]
-    dut.instruction_memory_inst.instr[5].value = 0x00C51523  # sh x12, 10(x10)  - Store to mem[2][31:16]
-    dut.instruction_memory_inst.instr[6].value = 0x00D52623  # sw x13, 12(x10)  - Store to mem[3]
-    dut.instruction_memory_inst.instr[0].value = 0x00009103  # lh  x2, 0(x1)   - Load halfword [15:0] = 0x5678 → sign-extend → 0x00005678
-    
-    dut.instruction_memory_inst.instr[1].value = 0x0000A183  # lw  x3, 0(x1)   - Load word = 0x12345678
-    dut.instruction_memory_inst.instr[2].value = 0x0040C203  # lbu x4, 4(x1)   - Load byte unsigned [7:0] = 0xDD → zero-extend → 0x000000DD
-    dut.instruction_memory_inst.instr[3].value = 0x0040D283  # lhu x5, 4(x1)   - Load halfword unsigned [15:0] = 0xCCDD → zero-extend → 0x0000CCDD
-
-
+    dut.instruction_memory_inst.instr[0].value = 0b00000000100000101000000011100111 # jalr x1, 8(x5)
         
+                
     cocotb.log.info("Register file dumped to register_dump.txt")
     # Run for 100 clock cycles
     for i in range(100):
         await RisingEdge(dut.clk)
         if i % 10 == 0:
             cocotb.log.info(f"Cycle {i}")
+    await RisingEdge(dut.clk)
     
     with open("mem_dump.txt", "w") as f:
         f.write("Register File Dump\n")
