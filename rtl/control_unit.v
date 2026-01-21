@@ -4,15 +4,11 @@ module control_unit(
     input  ZeroFlag, OverflowFlag, NegativeFlag, CarryFlag, 
     output reg [3:0] AluOp,
     output reg [1:0] MemSize, ResultSrc, PCSel,
-    output reg MemWrite, RegWrite, AluSrcBSel, ExtSign,
+    output reg MemWrite, RegWrite, AluSrcASel, AluSrcBSel, ExtSign,
     output reg [2:0] ImmSel
 );
 
     always @(*)begin
-        PCSel = 0;
-        ImmSel = 0;
-        RegWrite = 1;
-
         case(opcode)
         `R_TYPE:
             begin
@@ -24,7 +20,7 @@ module control_unit(
                 MemWrite = 0;
                 ExtSign = 0;
                 ImmSel = 0;
-                
+                AluSrcASel = 0;
                 case({funct7[5],funct3})
                     {1'b0,3'b000}: AluOp = `ADD;
                     {1'b0,3'b100}: AluOp = `XOR;
@@ -48,6 +44,7 @@ module control_unit(
                 MemSize = 0;
                 MemWrite = 0;
                 ExtSign = 0;
+                AluSrcASel = 0;
 
                 case(funct3) 
                     3'b000: AluOp = `ADD;
@@ -69,6 +66,7 @@ module control_unit(
                 PCSel = 2'b00;
                 ImmSel = `I_IMM;
                 AluOp = `ADD;
+                AluSrcASel = 0;
                 
                 case(funct3)
                     3'b000: begin MemSize = 2'b00; ExtSign = 1; end
@@ -87,6 +85,7 @@ module control_unit(
                 PCSel = 2'b00;
                 ImmSel = `S_IMM;
                 AluOp = `ADD;
+                AluSrcASel = 0;
                 ExtSign = 0;
                 case(funct3)
                     3'b000: MemSize = 2'b00; 
@@ -103,6 +102,7 @@ module control_unit(
                 ImmSel = `B_IMM;
                 MemSize = 0;
                 ResultSrc = 0;
+                AluSrcASel = 0;
                 ExtSign = 0;
                 case(funct3) 
                     3'b000: PCSel = ZeroFlag ? 2'b01 : 2'b00;
@@ -123,21 +123,62 @@ module control_unit(
             MemSize = 0;
             MemWrite = 0;
             AluSrcBSel = 0;
+            AluSrcASel = 0;
             ExtSign = 0;
             end
         `I_JALR: 
             begin
-                if(funct3 == 3'b000)begin
-                    AluOp = `ADD;
-                    ResultSrc = 2'b10;
-                    RegWrite = 1;
-                    ImmSel = `I_IMM;
-                    PCSel = 2'b10;
-                    MemSize = 0;
-                    MemWrite = 0;
-                    AluSrcBSel = 1;
-                    ExtSign = 0;
-                end
+                AluOp = `ADD;
+                ResultSrc = 2'b10;
+                RegWrite = 1;
+                ImmSel = `I_IMM;
+                PCSel = 2'b10;
+                MemSize = 0;
+                MemWrite = 0;
+                AluSrcBSel = 1;
+                AluSrcASel = 0;
+                ExtSign = 0;
+            end
+        `U_LUI:
+            begin
+                AluSrcASel = 0;
+                AluSrcBSel = 1;
+                AluOp = `B_PASS;
+                RegWrite = 1;
+                ResultSrc = 2'b00;
+                ImmSel = `U_IMM;
+                PCSel = 2'b00;
+
+                MemSize = 0;
+                MemWrite = 0;
+                ExtSign = 0;
+            end
+        `U_AUIPC:
+            begin
+                AluSrcASel = 1;
+                AluSrcBSel = 1;
+                AluOp = `ADD;
+                RegWrite = 1;
+                ResultSrc = 2'b00;
+                ImmSel = `U_IMM;
+                PCSel = 2'b00;
+
+                MemSize = 0;
+                MemWrite = 0;
+                ExtSign = 0;
+            end
+        default: 
+            begin
+                PCSel = 2'b00;
+                ImmSel = 3'b000;
+                RegWrite = 0;
+                MemWrite = 0;
+                ResultSrc = 2'b00;
+                AluSrcASel = 0;
+                AluSrcBSel = 0;
+                AluOp = `ADD;
+                MemSize = 2'b00;
+                ExtSign = 0;
             end
         endcase
     end

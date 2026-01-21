@@ -11,6 +11,7 @@
 `define SRA 4'b0111
 `define SLT 4'b1000
 `define SLTU 4'b1001
+`define B_PASS 4'b1010
 
 
 `define R_TYPE 7'b0110011

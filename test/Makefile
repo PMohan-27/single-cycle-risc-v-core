@@ -15,8 +15,7 @@ COMPILE_ARGS 		+= -I$(SRC_DIR)
 TOPLEVEL = cpu_top
 
 # MODULE is the basename of the Python test file
-MODULE = test
-
+MODULE = test_cpu
 
 # include cocotb's make rules to take care of the simulator setup
 include $(shell cocotb-config --makefiles)/Makefile.sim

@@ -10,14 +10,13 @@ module cpu_top(
     wire [31:0] SrcA, SrcB;
     wire [31:0] AluResult;
 
-    wire [1:0] PC_sel;
     wire [31:0] PC_in, PC_out;
     
     wire  [6:0] opcode, funct7;
     wire  [2:0] funct3;
     wire  ZeroFlag, OverflowFlag, NegativeFlag, CarryFlag;
     wire ExtSign; // Sign control for Load/store
-    wire  MemWrite, RegWrite, AluSrcBSel;
+    wire  MemWrite, RegWrite, AluSrcASel, AluSrcBSel;
     wire [1:0] MemSize, ResultSrc, PCSel;
     wire [2:0] ImmSel;
 
@@ -34,7 +33,7 @@ module cpu_top(
     wire [31:0] ImmExt;
     wire [31:0] DataMemResult;
 
-    assign PC_in = (PC_sel == 2'b00) ? PC_out+4 : ((PC_sel == 2'b01) ? PC_out+ImmExt : ( AluResult &~1'b1));
+    assign PC_in = (PCSel == 2'b00) ? PC_out+4 : ((PCSel == 2'b01) ? PC_out+ImmExt : ( AluResult & 32'hFFFFFFFE));
 
     instr_mem instruction_memory_inst(
         .addr(PC_out),
@@ -48,7 +47,7 @@ module cpu_top(
     assign A2 = read[24:20];
     assign A3 = read[11:7];
     assign WD3 = (ResultSrc == 2'b00) ? AluResult : ((ResultSrc == 2'b01) ? DataMemResult : PC_out + 4); 
-    assign SrcA = RD1;
+    assign SrcA = (AluSrcASel == 1'b0) ? RD1 : PC_out;
     assign SrcB = (AluSrcBSel == 1'b0) ? RD2 : ImmExt;
 
     PC pc_inst(
@@ -92,9 +91,10 @@ module cpu_top(
         .AluOp(AluOp),
         .MemWrite(MemWrite),
         .RegWrite(RegWrite),
+        .AluSrcASel(AluSrcASel),
         .AluSrcBSel(AluSrcBSel),
         .ResultSrc(ResultSrc),
-        .PCSel(PC_sel),
+        .PCSel(PCSel),
         .ImmSel(ImmSel),
         .MemSize(MemSize),
         .ExtSign(ExtSign)

@@ -5,7 +5,7 @@ module data_mem(
     input  [31:0] addr, WD,
     output reg [31:0] read
 );
-    reg [31:0] memory [0:31];
+    reg [31:0] memory [0:32];
     integer i;
 
     reg misalign;
@@ -17,6 +17,7 @@ module data_mem(
             2'b00: misalign = 1'b0;
             2'b01: misalign = (addr[0] != 1'b0);
             2'b10: misalign = (addr[1:0] != 2'b00);
+            default: misalign = 1'b1;
         endcase
 
         case(addr[1:0])
@@ -24,6 +25,7 @@ module data_mem(
             2'b01: byte_selected = memory[addr[31:2]][15:8];
             2'b10: byte_selected = memory[addr[31:2]][23:16];
             2'b11: byte_selected = memory[addr[31:2]][31:24];
+            default byte_selected = 8'b0;
         endcase
         hw_selected = (addr[1] == 1'b0) ? memory[addr[31:2]][15:0] : memory[addr[31:2]][31:16];
 

@@ -5,8 +5,9 @@ Single-cycle RISC-V CPU implementation.
 ![CPU Arch Diagram](RISCV-CPU.png)
 
 ## ALU Operations
-| ALU Op | Operation | funct3 | funct7[5]|
-|--------|-----------|--------|--------|
+
+| ALU Op | Operation | funct3 | funct7[5]|  
+|--------|-----------|--------|----------|
 | 0000   | ADD       | 000    | 0(0)00000|
 | 0001   | SUB       | 000    | 0(1)00000|
 | 0010   | XOR       | 100    | 0(0)00000|
@@ -19,7 +20,8 @@ Single-cycle RISC-V CPU implementation.
 | 1001   | SLTU      | 011    | 0(0)00000|
 
 ## I Type Instrs
-|funct3  | Instruction | ALU Op | 
+
+|funct3  | Instruction | ALU Op |  
 |--------|-------------|--------|
 | 000    | ADDI        | 0000   |
 | 010    | SLTI        | 1000   |
@@ -32,6 +34,7 @@ Single-cycle RISC-V CPU implementation.
 | 101    | SRAI        | 0111   |
 
 ## TODO
+
 - [x] CPU architecture diagram
 - [ ] Datapath description
 - [ ] Control signals table

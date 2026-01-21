@@ -38,7 +38,7 @@ module ALU(
             `SRA: result = $signed(SrcA) >>> SrcB[4:0];
             `SLT: result = ($signed(SrcA) < $signed(SrcB)) ? 32'd1 : 32'd0;
             `SLTU: result = (SrcA < SrcB) ? 32'd1 : 32'd0;
-
+            `B_PASS: result = SrcB;
             default: result = 32'b0;
         endcase
         ZeroFlag = (result == 32'b0); 
