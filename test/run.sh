@@ -1,9 +1,11 @@
 # Run the test
-make -B
+TARGET=${1:-CPU_TOP}
+make -B $TARGET
 
+echo "$TARGET"
 # Open waveform
 cd sim_build/rtl
 
-gtkwave cpu_top.fst
+gtkwave $TARGET.fst
 
 cd ../..

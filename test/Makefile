@@ -1,5 +1,6 @@
 
 #default values
+.DEFAULT_GOAL = all
 SIM ?= icarus
 TOPLEVEL_LANG ?= verilog
 SRC_DIR = $(PWD)/../rtl
@@ -12,10 +13,20 @@ VERILOG_SOURCES += $(addprefix $(SRC_DIR)/,$(PROJECT_SOURCES))
 
 COMPILE_ARGS 		+= -I$(SRC_DIR)
 
-TOPLEVEL = cpu_top
+TOPLEVEL=cpu_top 
+COCOTB_TEST_MODULES=test_cpu
 
-# MODULE is the basename of the Python test file
-MODULE = test_cpu
+
+ALU:
+	$(MAKE) TOPLEVEL=ALU COCOTB_TEST_MODULES=test_alu sim
+
+CPU_TOP:
+	$(MAKE) TOPLEVEL=cpu_top COCOTB_TEST_MODULES=test_cpu sim
+
+
 
 # include cocotb's make rules to take care of the simulator setup
 include $(shell cocotb-config --makefiles)/Makefile.sim
+
+export COCOTB_TEST_MODULES
+export TOPLEVEL
