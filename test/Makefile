@@ -23,6 +23,11 @@ ALU:
 CPU_TOP:
 	$(MAKE) TOPLEVEL=cpu_top COCOTB_TEST_MODULES=test_cpu sim
 
+DATA_MEM:
+	$(MAKE) TOPLEVEL=data_mem COCOTB_TEST_MODULES=test_data_mem sim
+
+CONTROL_UNIT:
+	$(MAKE) TOPLEVEL=control_unit COCOTB_TEST_MODULES=test_control_unit sim
 
 
 # include cocotb's make rules to take care of the simulator setup

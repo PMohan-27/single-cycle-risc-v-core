@@ -102,8 +102,7 @@ async def test_cpu_baasic(dut):
             cocotb.log.info(f"Cycle {i}")
     await RisingEdge(dut.clk)
     cocotb.log.info("Register file dumped to register_dump.txt")
-    
-    with open("mem_dump.txt", "w") as f:
+    with open("dumps/mem_dump.txt", "w") as f:
         f.write("Register File Dump\n")
         for reg_num in range(32):
             try:
@@ -118,6 +117,5 @@ async def test_cpu_baasic(dut):
                 f.write(f"d{data:2d} = 0x{data_val:08X} ({data_val:11d})\n")
             except:
                 f.write(f"d{data:2d} = N/A\n")
-        
 
     cocotb.log.info("Test completed!")

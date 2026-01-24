@@ -3,7 +3,29 @@ import cocotb
 from cocotb.triggers import Timer
 import ctypes
 
-@cocotb.test
+def calculate_flags(alu_op, result,a,b):
+    result32 = result & 0xFFFFFFFF
+    a32 = a & 0xFFFFFFFF
+    b32= b & 0xFFFFFFFF
+    
+    a_sign = (a >> 31) & 1
+    b_sign = (b >> 31) & 1
+    r_sign = (result32 >> 31) & 1
+    zero = (result32 == 0)   
+    negative = ((result32 >> 31) & 0b1)
+    overflow = 0
+    carry = 0
+    if(alu_op == 0b0000): # add
+        overflow = (a_sign == b_sign) and (a_sign != r_sign)
+        carry = ((a32+b32) >> 32) & 0b1
+    elif(alu_op == 0b0001): # sub
+        overflow = (a_sign != b_sign) and (a_sign != r_sign)
+        carry = ((a + ((~b & 0xFFFFFFFF) +1)) >> 32) & 0b1
+    
+    return overflow, carry, negative, zero
+
+
+@cocotb.test()
 async def ALU_test(dut):
     ALU_OPS = {
         "ADD":  (0b0000, lambda a,b: a + b),  
@@ -43,6 +65,12 @@ async def ALU_test(dut):
 
             dut._log.info(f"U{operation} {int(dut.SrcA.value)}, {int(dut.SrcB.value)} result: {int(dut.result.value)}")
             dut._log.info(f"{operation} {int(dut.SrcA.value.to_signed())}, {int(dut.SrcB.value.to_signed())} result: {int(dut.result.value.to_signed())}")
+
+            overflow, carry, negative, zero = calculate_flags(dut.AluOp.value,dut.result.value.to_signed(), values[0],values[1])
+            assert(overflow == int(dut.OverflowFlag.value)), "Overflow flag not matched"
+            assert(carry == int(dut.CarryFlag.value)), "Carry flag not matched"
+            assert(negative == int(dut.NegativeFlag.value)), "Negative flag not matched"
+            assert(zero == int(dut.ZeroFlag.value)), "Zero flag not matched"
 
             expected_result = calculation(int(dut.SrcA.value),int(dut.SrcB.value))
             assert(int(dut.result.value) == (expected_result & 0xFFFFFFFF))

@@ -48,7 +48,7 @@ module data_mem(
             memory[i] <= 32'h0;
         end
     end
-    else begin 
+    else begin
         if(WE & !misalign)begin
             case(MemSize) 
             2'b00: begin 

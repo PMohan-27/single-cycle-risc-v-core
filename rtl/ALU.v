@@ -11,7 +11,7 @@ module ALU(
         CarryFlag = 0;
         OverflowFlag = 0;
         result = 32'b0;
-
+        
         case(AluOp)
             `ADD:
                 begin
