@@ -71,22 +71,30 @@ async def test_cpu_baasic(dut):
 
     dut.rst.value = 0
 
-    dut.reg_file_inst.registers[5].value = 0x100  
+    # dut.reg_file_inst.registers[5].value = 0x100  
 
-    dut.reg_file_inst.registers[1].value = 10
-    dut.reg_file_inst.registers[2].value = 20
-    dut.reg_file_inst.registers[3].value = 5
-    dut.reg_file_inst.registers[4].value = -3
-    dut.reg_file_inst.registers[5].value = 0
-    dut.reg_file_inst.registers[10].value = 100
+    # dut.reg_file_inst.registers[1].value = 10
+    # dut.reg_file_inst.registers[2].value = 20
+    # dut.reg_file_inst.registers[3].value = 5
+    # dut.reg_file_inst.registers[4].value = -3
+    # dut.reg_file_inst.registers[5].value = 0
+    # dut.reg_file_inst.registers[10].value = 100
     
-    dut.data_memory_inst.memory[0].value = 0x12345678
-    dut.data_memory_inst.memory[1].value = 0xAABBCCDD
-    dut.data_memory_inst.memory[2].value = 0xDEADBEEF
-    dut.data_memory_inst.memory[3].value = 0xCAFEBABE
+    # dut.data_memory_inst.memory[0].value = 0x12345678
+    # dut.data_memory_inst.memory[1].value = 0xAABBCCDD
+    # dut.data_memory_inst.memory[2].value = 0xDEADBEEF
+    # dut.data_memory_inst.memory[3].value = 0xCAFEBABE
 
     # dut.instruction_memory_inst.instr[0].value = 0b00000000100000101000000011100111 # jalr x1, 8(x5)
-    load_rv32i_test_program(dut)
+    # load_rv32i_test_program(dut)
+    dut.instruction_memory_inst.instr[0].value = 0b00000000101000000000000010010011   # addi x1, x0, 10
+    dut.instruction_memory_inst.instr[1].value = 0b00000000000000000000000100010011   # addi x2, x0, 0
+    dut.instruction_memory_inst.instr[2].value = 0b00000000000100010000000100010011   # addi x2, x2, 1
+    dut.instruction_memory_inst.instr[3].value = 0b11111111111100001000000010010011   # addi x1, x1, -1
+    dut.instruction_memory_inst.instr[4].value = 0b11111110000000001001110011100011   # bne x1, x0, -8
+
+
+
                 
     # Run for 100 clock cycles
     for i in range(50):
@@ -101,7 +109,6 @@ async def test_cpu_baasic(dut):
         if i % 10 == 0:
             cocotb.log.info(f"Cycle {i}")
     await RisingEdge(dut.clk)
-    cocotb.log.info("Register file dumped to register_dump.txt")
     with open("dumps/mem_dump.txt", "w") as f:
         f.write("Register File Dump\n")
         for reg_num in range(32):
@@ -119,3 +126,5 @@ async def test_cpu_baasic(dut):
                 f.write(f"d{data:2d} = N/A\n")
 
     cocotb.log.info("Test completed!")
+    cocotb.log.info("Memory dumped to mem_dump.txt")
+

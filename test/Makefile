@@ -18,20 +18,17 @@ COCOTB_TEST_MODULES=test_cpu
 
 
 ALU:
-	$(MAKE) TOPLEVEL=ALU COCOTB_TEST_MODULES=test_alu sim
+	$(MAKE) TOPLEVEL=ALU COCOTB_TEST_MODULES=test_alu
 
 CPU_TOP:
-	$(MAKE) TOPLEVEL=cpu_top COCOTB_TEST_MODULES=test_cpu sim
+	$(MAKE) TOPLEVEL=cpu_top COCOTB_TEST_MODULES=test_cpu
 
 DATA_MEM:
-	$(MAKE) TOPLEVEL=data_mem COCOTB_TEST_MODULES=test_data_mem sim
+	$(MAKE) TOPLEVEL=data_mem COCOTB_TEST_MODULES=test_data_mem
 
 CONTROL_UNIT:
-	$(MAKE) TOPLEVEL=control_unit COCOTB_TEST_MODULES=test_control_unit sim
+	$(MAKE) TOPLEVEL=control_unit COCOTB_TEST_MODULES=test_control_unit
 
 
 # include cocotb's make rules to take care of the simulator setup
 include $(shell cocotb-config --makefiles)/Makefile.sim
-
-export COCOTB_TEST_MODULES
-export TOPLEVEL
