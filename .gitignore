@@ -4,5 +4,6 @@
 /test/__pycache__/
 /test/sim_build/
 /test/dumps/*.txt
-
+vivado/
 /docs/notes.md
+gowin/

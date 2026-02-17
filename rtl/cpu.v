@@ -2,7 +2,9 @@
 
 module cpu_top(
     input  clk,
-    input  rst
+    input  rst,
+    output [31:0] debug_out
+
 );
 
 
@@ -20,7 +22,7 @@ module cpu_top(
     wire [1:0] MemSize, ResultSrc, PCSel;
     wire [2:0] ImmSel;
 
-
+    
 
     wire [31:0] read;
 
@@ -37,7 +39,8 @@ module cpu_top(
 
     instr_mem instruction_memory_inst(
         .addr(PC_out),
-        .read(read)
+        .read(read),
+        .clk(clk)
     );
 
     assign opcode = read[6:0];
@@ -116,7 +119,7 @@ module cpu_top(
         .WD(RD2),
         .read(DataMemResult)
     );
-
+    assign debug_out = AluResult;
 
 
 endmodule

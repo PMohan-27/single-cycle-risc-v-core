@@ -1,3 +1,5 @@
+`include "constants.vh"
+
 module control_unit(
     input  [6:0] opcode, funct7,
     input  [2:0] funct3,
@@ -33,6 +35,7 @@ module control_unit(
 
                     {1'b1,3'b000}: AluOp = `SUB;
                     {1'b1,3'b101}: AluOp = `SRA;
+                    default: AluOp = `ADD;
                 endcase
             end
         `I_TYPE: begin 
@@ -55,6 +58,7 @@ module control_unit(
                     3'b101: AluOp = (funct7 == 7'h20) ? `SRA : `SRL; // funct7 == imm[11:5]
                     3'b010: AluOp = `SLT;
                     3'b011: AluOp = `SLTU;
+                    default: AluOp = `ADD;
                 endcase
             end
         `I_LOAD: 
@@ -74,6 +78,8 @@ module control_unit(
                     3'b010: begin MemSize = 2'b10; ExtSign = 1; end
                     3'b100: begin MemSize = 2'b00; ExtSign = 0; end
                     3'b101: begin MemSize = 2'b01; ExtSign = 0; end
+                    default:begin  MemSize = 2'b00; ExtSign = 1; end
+
                 endcase
             end
         `S_TYPE:
@@ -91,6 +97,7 @@ module control_unit(
                     3'b000: MemSize = 2'b00; 
                     3'b001: MemSize = 2'b01; 
                     3'b010: MemSize = 2'b10; 
+                    default: MemSize = 2'b00;
                 endcase
             end
         `B_TYPE: 
@@ -111,6 +118,7 @@ module control_unit(
                     3'b101: PCSel = ~(NegativeFlag ^ OverflowFlag) ? 2'b01 : 2'b00;
                     3'b110: PCSel = ~CarryFlag ? 2'b01 : 2'b00;
                     3'b111: PCSel = CarryFlag ? 2'b01 : 2'b00;
+                    default: PCSel = 2'b00;
                 endcase
             end
         `J_JAL:

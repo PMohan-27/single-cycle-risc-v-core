@@ -1,4 +1,4 @@
-
+`include "constants.vh"
 module ALU(
     input  [3:0] AluOp,
     input  [31:0] SrcA, SrcB,
